@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคำนวณค่าความต้านทาน</title>
+    <link rel="stylesheet" href="dark-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="glow-text">เครื่องคำนวณค่าความต้านทาน</h1>
+        <p class="instruction">เลือกสีแถบบนตัวต้านทานเพื่อคำนวณค่า</p>
+        
+        <!-- display SVG (inline) -->
+        <div class="resistor-display">
+            <svg id="resistor-img" class="resistor-svg" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+                <line x1="10" y1="60" x2="100" y2="60" stroke="silver" stroke-width="4"/>
+                <rect x="100" y="30" width="200" height="60" fill="#d4aa70" rx="10"/>
+                <!-- แถบสำคัญ (ช่องแสดง) -->
+                <rect id="display-band1" x="120" y="30" width="14" height="60" fill="#000"/>
+                <rect id="display-band2" x="145" y="30" width="14" height="60" fill="#000"/>
+                <rect id="display-band3" x="170" y="30" width="14" height="60" fill="#000"/>
+                <rect id="display-multiplier" x="210" y="30" width="14" height="60" fill="#000"/>
+                <rect id="display-tolerance" x="240" y="30" width="14" height="60" fill="#FFD700"/>
+                <line x1="300" y1="60" x2="390" y2="60" stroke="silver" stroke-width="4"/>
+            </svg>
+        </div>
+
+        <!-- ตัวเลือกโหมด 4/5 แทบ -->
+        <div class="color-bands">
+            <label class="glow-text">โหมด</label>
+            <select id="band-mode" class="dark-select">
+                <option value="4">4 แถบ</option>
+                <option value="5">5 แถบ</option>
+            </select>
+
+            <div class="band-select">
+                <label class="glow-text">แถบที่ 1</label>
+                <select id="band1" class="dark-select" onchange="updateDisplay()">
+                    <option value="0">ดำ (0)</option>
+                    <option value="1">น้ำตาล (1)</option>
+                    <option value="2">แดง (2)</option>
+                    <option value="3">ส้ม (3)</option>
+                    <option value="4">เหลือง (4)</option>
+                    <option value="5">เขียว (5)</option>
+                    <option value="6">น้ำเงิน (6)</option>
+                    <option value="7">ม่วง (7)</option>
+                    <option value="8">เทา (8)</option>
+                    <option value="9">ขาว (9)</option>
+                </select>
+            </div>
+
+            <div class="band-select">
+                <label class="glow-text">แถบที่ 2</label>
+                <select id="band2" class="dark-select" onchange="updateDisplay()">
+                    <option value="0">ดำ (0)</option>
+                    <option value="1">น้ำตาล (1)</option>
+                    <option value="2">แดง (2)</option>
+                    <option value="3">ส้ม (3)</option>
+                    <option value="4">เหลือง (4)</option>
+                    <option value="5">เขียว (5)</option>
+                    <option value="6">น้ำเงิน (6)</option>
+                    <option value="7">ม่วง (7)</option>
+                    <option value="8">เทา (8)</option>
+                    <option value="9">ขาว (9)</option>
+                </select>
+            </div>
+
+            <!-- แถบ 3 (สำหรับ 5 แถบ) -->
+            <div class="band-select" id="band3-select">
+                <label class="glow-text">แถบที่ 3</label>
+                <select id="band3" class="dark-select" onchange="updateDisplay()">
+                    <option value="0">ดำ (0)</option>
+                    <option value="1">น้ำตาล (1)</option>
+                    <option value="2">แดง (2)</option>
+                    <option value="3">ส้ม (3)</option>
+                    <option value="4">เหลือง (4)</option>
+                    <option value="5">เขียว (5)</option>
+                    <option value="6">น้ำเงิน (6)</option>
+                    <option value="7">ม่วง (7)</option>
+                    <option value="8">เทา (8)</option>
+                    <option value="9">ขาว (9)</option>
+                </select>
+            </div>
+
+            <div class="band-select">
+                <label class="glow-text">ตัวคูณ</label>
+                <select id="multiplier" class="dark-select" onchange="updateDisplay()">
+                    <option value="1">ดำ (×1)</option>
+                    <option value="10">น้ำตาล (×10)</option>
+                    <option value="100">แดง (×100)</option>
+                    <option value="1000">ส้ม (×1K)</option>
+                    <option value="10000">เหลือง (×10K)</option>
+                    <option value="100000">เขียว (×100K)</option>
+                    <option value="1000000">น้ำเงิน (×1M)</option>
+                </select>
+            </div>
+
+            <div class="band-select">
+                <label class="glow-text">ค่าความคลาดเคลื่อน</label>
+                <select id="tolerance" class="dark-select" onchange="updateDisplay()">
+                    <option value="1">น้ำตาล (±1%)</option>
+                    <option value="2">แดง (±2%)</option>
+                    <option value="5" selected>ทอง (±5%)</option>
+                    <option value="10">เงิน (±10%)</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="glow-button" onclick="calculateResistance()">คำนวณ</button>
+
+        <div class="result">
+            <h2 class="glow-text">ค่าความต้านทาน: <span id="resistance-value">0</span> Ω</h2>
+            <p class="glow-text">ค่าความคลาดเคลื่อน: ±<span id="tolerance-value">5</span>%</p>
+            <p class="glow-text">ช่วงค่าที่เป็นไปได้: <span id="range-value"></span></p>
+        </div>
+    </div>
+    <script src="dark-script.js"></script>
+</body>
+</html>
